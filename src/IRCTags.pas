@@ -26,8 +26,8 @@ const
   TAG_BEGINLINK  = #25;
   TAG_ENDLINK    = #26;
   TAG_UNDERLINE  = #31;
-  TAGS = TAG_BOLD + TAG_COLOR + TAG_NORMAL + TAG_INVERSE +
-    TAG_BEGINLINK + TAG_ENDLINK + TAG_UNDERLINE;
+  TAGS: array[0..6] of Char = (TAG_BOLD, TAG_COLOR, TAG_NORMAL, TAG_INVERSE,
+    TAG_BEGINLINK, TAG_ENDLINK, TAG_UNDERLINE);
 
   clrNone       = -1;
   clrWhite      =  0;
@@ -316,6 +316,6 @@ initialization
   MircColors[clrFuchsia] := clFuchsia;
   MircColors[clrGray] := clGray;
   MircColors[clrSilver] := clSilver;
-finalization
+end. {should this be finalization?}
 
 end.

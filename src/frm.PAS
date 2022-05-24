@@ -1,15 +1,14 @@
-unit fmdUnit1;
+unit Frm;
 
 interface
 
 uses
-    SysUtils, WinTypes, WinProcs, Messages, Classes, Graphics, Controls,
-  Forms, Dialogs, SysUtils, FatThing, ImgList, ExtCtrls, IrcTags, StdCtrls,
-  Menus, Spin;
+  SysUtils, WinTypes, WinProcs, Messages, Classes, Graphics, Controls,
+  Forms, Dialogs, FatThing, IrcTags, StdCtrls, ExtCtrls, Spin, Menus;
 
 type
   TForm1 = class(TForm)
-    GroupBox1: TGroupBox;
+{*  GroupBox1: TGroupBox;
     Image1: TImage;
     Label1: TLabel;
     MircMemo: TMemo;
@@ -31,8 +30,29 @@ type
     LHeight: TSpinEdit;
     DAlign: TRadioGroup;
     SImages: TCheckBox;
-    WWrap: TCheckBox;
+    WWrap: TCheckBox; }
     FatMemo1: TFatMemo;
+    GroupBox1: TGroupBox;
+    Image1: TImage;
+    Label1: TLabel;
+    MircMemo: TMemo;
+    ImgDollar: TImage;
+    ImgSmile: TImage;
+    ImgBeer: TImage;
+    ImgMail: TImage;
+    PopupMenu1: TPopupMenu;
+    RemLink: TMenuItem;
+    Visible1: TMenuItem;
+    MenuText: TMenuItem;
+    MenuLink: TMenuItem;
+    N1: TMenuItem;
+    PopupMenu2: TPopupMenu;
+    Copytoclipboard1: TMenuItem;
+    Label2: TLabel;
+    LHeight: TSpinEdit;
+    DAlign: TRadioGroup;
+    SImages: TCheckBox;
+    WWrap: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure FatMemo1LinkClick(Sender: TObject; Link: String);
     procedure MircMemoKeyUp(Sender: TObject; var Key: Word;
@@ -79,13 +99,13 @@ begin
   
   P := L.Add;
   P.Text := 'money';
-  // we added text
+  {/ we added text }
   P.Bitmap := ImgDollar.Picture.Bitmap;
-  // which we "overdraw" by setting the bitmap
+{ // which we "overdraw" by setting the bitmap }
   P.Link := 'Ch-ching!';
-  // and a link.
+{ // and a link.
   // in this case, a dollar sign would be drawn, Ch-ching! text would occur as
-  // the clicked link and when copying to the clipboard, the word 'money' would be used.
+  // the clicked link and when copying to the clipboard, the word 'money' would be used. }
 
   P := L.Add;
   P.Text := '.';
@@ -330,5 +350,4 @@ begin
 end;
 
 end.
-
 

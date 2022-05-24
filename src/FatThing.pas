@@ -54,12 +54,12 @@
 
 
   
-unit FatThings;
+unit FatThing;
 
 interface
 
-uses Classes, Windows, Graphics, Controls, ExtCtrls, Messages, SysUtils,
-  ShellApi, Clipbrd, IRCTags, StdCtrls, Forms;
+uses Classes, WinTypes, WinProcs, Graphics, Controls, ExtCtrls, Messages, SysUtils,
+  ShellApi, Clipbrd, IRCTags, StdCtrls, Forms, Menus;
 
 type
   TFatMemo  = class;
@@ -441,18 +441,18 @@ begin
   FStyle := [];
   FBitmap := NIL;
   FLink := '';
-  FFontColor := clNone;
-  FBackColor := clNone;
+  FFontColor := clrNone;
+  FBackColor := clrNone;
 end;
 
 procedure TFatPart.Free;
 begin
-  inherited;
+  inherited Free;
 end;
 
 destructor TFatPart.Destroy;
 begin
-  inherited;
+  inherited Destroy;
 end;
 
 procedure TFatPart.Assign(Source: TFatPart);
@@ -596,7 +596,7 @@ begin
 
   if IsLink then
     begin
-      FLine.FLines.FMemo.Cursor := crHandPoint;
+      {*FLine.FLines.FMemo.Cursor := crHandPoint;*}
     end;
 end;
 
@@ -676,8 +676,8 @@ begin
   case FType of
     ptText:
       begin
-        S.Write(Text, Length(Text) + 1);
-        S.Write(Link, Length(Link) + 1);
+        S.Write(FText, Length(FText) + 1);
+        S.Write(FLink, Length(FLink) + 1);
       end;
     ptColor:
       begin
@@ -707,7 +707,7 @@ begin
     begin
       if Bitmap <> NIL then
         FType := ptBitmap else
-      if Text <> '' then
+      if FText <> '' then
         FType := ptText else
         FType := ptNone;
 
@@ -754,9 +754,9 @@ begin
       CharX := X;
       CharY := Y;
 
-      Flags := Flags + [dfDontDraw];
+      {* Flags := Flags + [dfDontDraw]; *}
       PaintTo(Canvas, ALeft, ATop, LineHeight, Borders, Flags);
-      Flags := Flags - [dfDontDraw];
+      {*Flags := Flags - [dfDontDraw] *};
 
       Result := CharIndex;
       CharRect := FCharRect;
@@ -875,7 +875,7 @@ begin
 end;
 
 const
-  WrapChars = ' ,.!?\|/;:';
+  WrapChars : array[0..9] of Char = (' ', ',', '.', '!', '?', '\', '|', '/', ';', ':');
 
 function FindWrapCharBackward(const S: String): Integer;
 var Allc, Ic, All, I, P: Integer;
@@ -1006,7 +1006,9 @@ begin
   until TextFit = '';
 end;
 
-procedure TFatPart.PaintTo(Canvas: TCanvas; var Left, Top: Integer; const LineHeight: Integer; Borders: TRect; Flags: TDrawFlags);
+procedure TFatPart.PaintTo(
+          Canvas: TCanvas; var Left, Top: Integer; const LineHeight: Integer;
+          Borders: TRect; Flags: TDrawFlags);
 var DrawRect: TRect;
   I, SStart, SEnd, DrawTop, DrawBottom: Integer;
   Memo: TFatMemo;
@@ -1071,10 +1073,10 @@ begin
       begin
         if NOT (dfDontDraw in Flags) then
           begin
-            if FontColor <> clNone then
+            if FontColor <> clrNone then
               Canvas.Font.Color := FontColor;
 
-            if BackColor <> clNone then
+            if BackColor <> clrNone then
               Canvas.Brush.Color := BackColor;
           end;
 
@@ -1162,7 +1164,7 @@ begin
   Clear;
   FParts.Destroy;
 
-  inherited;
+  inherited Destroy;
 end;
 
 procedure TFatLine.Clear;
@@ -1459,7 +1461,9 @@ begin
     end;
 end;
 
-procedure TFatLine.PaintTo(Canvas: TCanvas; var Left, Top: Integer; const LineHeight: Integer; Borders: TRect; Flags: TDrawFlags);
+procedure TFatLine.PaintTo(
+          Canvas: TCanvas; var Left, Top: Integer; const LineHeight: Integer;
+          Borders: TRect; Flags: TDrawFlags);
 var All, I, PrevLeft, PrevTop: Integer;
 begin
   FDrawInfo.FontColor := Canvas.Font.Color;
@@ -1518,13 +1522,13 @@ begin
   repeat
     if Parts[I].PartType = ptColor then
       begin
-        if Parts[I].BackColor <> clNone then
+        if Parts[I].BackColor <> clrNone then
           begin
             OrigBColor := Parts[I].BackColor;
             C1 := True;
           end;
 
-        if Parts[I].FontColor <> clNone then
+        if Parts[I].FontColor <> clrNone then
           begin
             OrigFColor := Parts[I].FontColor;
             C2 := True;
@@ -1571,7 +1575,7 @@ begin
   Clear;
   FItems.Free;
 
-  inherited;
+  inherited Free;
 end;
 
 destructor TFatLines.Destroy;
@@ -1579,7 +1583,7 @@ begin
   Clear;
   FItems.Free;
 
-  inherited;
+  inherited Destroy;
 end;
 
 procedure TFatLines.Clear;
@@ -1735,7 +1739,7 @@ end;
 
 constructor TFatMemo.Create(AOwner: TComponent);
 begin
-  inherited;
+  inherited Create(AOwner);
 
   Width := 150;
   Height := 100;
@@ -1815,12 +1819,12 @@ begin
   FBarHoriz.Free;
   FLines.Free;
 
-  inherited;
+  inherited Free;
 end;
 
 destructor TFatMemo.Destroy;
 begin
-  inherited;
+  inherited Destroy;
 end;
 
 procedure TFatMemo.PaintTo(Canvas: TCanvas; const BlindDraw, OverDraw: Boolean);
@@ -1841,14 +1845,14 @@ begin
   if FBarHoriz.Visible then
     R.Bottom := FBarHoriz.Top - 1;
 
-  // Border
+  {* Border *}
   if BorderStyle = bsSingle then
     begin
       Frame3D(Canvas, R, clBtnShadow, clWindow, 1);
       Frame3D(Canvas, R, clWindowText, clBtnFace, 1);
     end;
 
-  // Background color
+  {* Background color *}
   with Canvas do
     begin
       Brush.Color := Color;
@@ -1891,7 +1895,7 @@ begin
 
         AHeight := Lines[I].Height;
         ATop := ATop - AHeight;
-        //PrevTop := ATop;
+        {* //PrevTop := ATop; *}
         Lines[I].PaintTo(Canvas, ALeft, ATop, LineHeight, R, Flags);
         ATop := ATop - Lines[I].Height;
 
@@ -1929,7 +1933,7 @@ end;
 
 procedure TFatMemo.Paint;
 begin
-  //inherited;
+  {* //inherited; *}
 
   PaintTo(Canvas, False, True);
 end;
@@ -1988,7 +1992,7 @@ end;
 
 function TFatMemo.GetBarHoriz: Boolean;
 begin
-  Result := False; //FBarHoriz.Visible;
+  Result := False; {*//FBarHoriz.Visible;*}
 end;
 
 procedure TFatMemo.SetBarHoriz(const Value: Boolean);
@@ -2033,7 +2037,8 @@ begin
 end;
 
 
-procedure TFatMemo.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TFatMemo.MouseDown(
+          Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var ChIdx: Integer;
   R: TRect;
 begin
@@ -2050,12 +2055,12 @@ begin
           y := R.Top;
         end;
 
-      //Repaint;
+      {*//Repaint;*}
     end;
 
   PaintTo(Canvas, False, False);
 
-  inherited;
+  inherited MouseDown(Button, Shift, X, Y);
 end;
 
 procedure TFatMemo.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -2065,17 +2070,17 @@ begin
       CopySelection(FSelStart, FSelEnd);
       FSelecting := False;
 
-      //PaintTo(Canvas, False, False);
+      {*//PaintTo(Canvas, False, False); *}
       Repaint;
     end else
   if (mbLeft = Button) and FClick then
     begin
       FClick := True;
-      if Assigned(OnClick) then
-        OnClick(Self);
+      {*if Assigned(OnClick) then
+        OnClick(Self);*}
     end;
 
-  inherited;
+  inherited MouseUp(Button, Shift, X, Y);
 end;
 
 procedure TFatMemo.MouseMove(Shift: TShiftState; X, Y: Integer);
@@ -2103,7 +2108,7 @@ begin
       PaintTo(Canvas, False, False);
     end;
 
-  inherited;
+  inherited MouseMove(Shift, X, Y);
 end;
 
 procedure TFatMemo.CMMouseEnter(var M: TMessage);
@@ -2214,7 +2219,7 @@ begin
 
   FClick := False;
   
-  if (FOverPart <> NIL) and FOverPart.IsLink then
+  {*if (FOverPart <> NIL) and FOverPart.IsLink then
     begin
       Link := FOverPart.Link;
 
@@ -2222,8 +2227,8 @@ begin
         ShellExecute(0, NIL, PChar(Link), NIL, NIL, 0) else
         if Assigned(FOnLinkClick) then
           FOnLinkClick(Self, Link);
-    end else
-    inherited;
+    end else*}
+    inherited Click;
 end;
 
 procedure TFatMemo.SetSelStart(ALineIdx, APartIdx, ACharIdx: Integer);

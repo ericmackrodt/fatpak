@@ -1,4 +1,4 @@
-program fatMemoDemo;
+program fatDemo;
 
 uses
   Forms,
